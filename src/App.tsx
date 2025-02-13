@@ -1,44 +1,16 @@
 import { useEffect, useState, useRef } from "react";
 import type { Schema } from "../amplify/data/resource";
 
-//Auth1
 import { useAuthenticator } from '@aws-amplify/ui-react';
 import { generateClient } from "aws-amplify/data";
 
 const client = generateClient<Schema>();
 
-// Definieer een type voor de gebruiker (optioneel voor TypeScript)
-type Resultaat = {
- // id: number;
- // name: string;
- // email: string;
-    status: string;
-    body: string;
-};
-
 function App() {
-  //Auth1
-  //const { signOut } = useAuthenticator();
-  //Auth2
   const { user, signOut } = useAuthenticator();
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
   const inputRef = useRef<HTMLInputElement>(null);
-
-
-
- /* const handleButtonClick = () => {
-    // Via de ref kun je toegang krijgen tot de waarde van het input veld
-    if (inputRef.current) {
-      alert(`De ingevoerde tekst is: ${inputRef.current.value}`);
-    }
-
-
-    // tekstinput
-
-  };
-*/
-
 
   const apiUrl = 'https://p0go49fgi5.execute-api.eu-west-3.amazonaws.com/Prod/hello';
 
@@ -46,25 +18,14 @@ function App() {
   const [jsonResponse, setJsonResponse] = useState<string | null>(null);
   const [error] = useState<string | null>(null);
 
- // const RESTRef = useRef<HTMLInputElement>(null);
-
-
-  const [users, setUsers] = useState<Resultaat[]>([]);
-
-
- 
-    
-
   const fetchData = async () => {
- //   alert('De knop "Get REST API" is ingedrukt');
+    //   alert('De knop "Get REST API" is ingedrukt');
     try {
       const response = await fetch(apiUrl);
       // Zorg dat je CORS enabled in de API Gateway
       if (!response.ok) {
-        alert('checkpoint3');
         throw new Error('Netwerkresponse was niet ok');
       }
- 
       const result = await response.json();
       // Zet de JSON om in een string en sla het op in de state
       setJsonResponse(JSON.stringify(result, null, 2)); // 'null, 2' voor nette opmaak
@@ -74,35 +35,19 @@ function App() {
     }
   }
   
-
   const fetchformatData = async () => {
- //   alert(`Inputveld ${inputRef.current.value}`);
-       try {
-         const response = await fetch(apiUrl);
-         if (!response.ok) {
-           alert('checkpoint3');
-           throw new Error('Netwerkresponse was niet ok');
-         } 
-     //    const datax = await response.json();
-   
-         const data: Resultaat[] = await response.json();
-         users(data);
-       } 
-       catch (err) {
-         throw new Error('Er is een fout opgetreden: ');
-       }
-     }
-
-
-  
-  //Type__REST API
-//  const fetchformatData
-//      <div id="result" ref={RESTRef}>xx</div>
-
-//
-//<button onClick={fetchformatData}>Type____REST API</button>
-
-
+    try {
+      const response = await fetch(apiUrl);
+      if (!response.ok) {
+        throw new Error('Netwerkresponse was niet ok');
+      } 
+      const result = await response.json();
+      alert(`result is:  ${result.statusCode}  ${result.body}`)
+    } 
+    catch (err) {
+      throw new Error('Er is een fout opgetreden: ');
+    }
+  }
 
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
@@ -117,7 +62,6 @@ function App() {
   function deleteTodo(id: string) {
     client.models.Todo.delete({ id })
   }
-
 
   return (
     <main>
@@ -152,36 +96,7 @@ function App() {
       </div>
       <input type="text" ref={inputRef} placeholder="Voer iets in" />
 
-      <button onClick={fetchformatData}>TypeScript REST API</button>
-
-      <div>
-            <h2>Gebruikerslijst:</h2>
-      </div>
-
-
-
-      {/* Weergave van foutmelding, indien aanwezig */}
-      {error && <p style={{ color: 'red' }}>{error}</p>}
-
-      {/* Weergave van de gebruikersgegevens */}
-      <div>
-        {users.length > 0 ? (
-          <div>
-            <h2>Gebruikerslijst:</h2>
-            <ul>
-              {users.map((user) => (
-                <li key={user.status}>
-                  <strong>body:</strong> {user.body}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : (
-          <p>Geen gebruikers om weer te geven</p>
-        )}
-      </div>
-
-
+      <button onClick={fetchformatData}>Json velden REST API</button>
     </main>
   );
 }
