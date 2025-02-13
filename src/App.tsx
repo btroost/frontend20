@@ -7,6 +7,15 @@ import { generateClient } from "aws-amplify/data";
 
 const client = generateClient<Schema>();
 
+// Definieer een type voor de gebruiker (optioneel voor TypeScript)
+type Resultaat = {
+ // id: number;
+ // name: string;
+ // email: string;
+    status: string;
+    body: string;
+};
+
 function App() {
   //Auth1
   //const { signOut } = useAuthenticator();
@@ -14,42 +23,84 @@ function App() {
   const { user, signOut } = useAuthenticator();
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
 
-
-
   const inputRef = useRef<HTMLInputElement>(null);
-  const handleButtonClick = () => {
+
+
+
+ /* const handleButtonClick = () => {
     // Via de ref kun je toegang krijgen tot de waarde van het input veld
     if (inputRef.current) {
       alert(`De ingevoerde tekst is: ${inputRef.current.value}`);
     }
+
+
+    // tekstinput
+
   };
+*/
 
 
   const apiUrl = 'https://p0go49fgi5.execute-api.eu-west-3.amazonaws.com/Prod/hello';
+
+  // Get REST API button, Jsonify to text
+  const [jsonResponse, setJsonResponse] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
+
+ // const RESTRef = useRef<HTMLInputElement>(null);
+
+
+  const [users, setUsers] = useState<Resultaat[]>([]);
+
+
+ 
     
 
   const fetchData = async () => {
-    alert('De knop "Get REST API" is ingedrukt');
+ //   alert('De knop "Get REST API" is ingedrukt');
     try {
-      alert('checkpoint');
       const response = await fetch(apiUrl);
-      alert('checkpoint2');
-      //alert('De knop "Get REST API" is ingedrukt. response is: ${response}');
-      alert(`De response is: ${response}`);
-     if (!response.ok) {
+      // Zorg dat je CORS enabled in de API Gateway
+      if (!response.ok) {
+        alert('checkpoint3');
         throw new Error('Netwerkresponse was niet ok');
       }
  
       const result = await response.json();
-      alert(`De ingevoerde tekst is: ${result}`);
-   //     const data: User[] = await response.json();
- //     setUsers(data);
-    } catch (err) {
-      alert(`Er is een fout opgetreden ${err}` );
+      // Zet de JSON om in een string en sla het op in de state
+      setJsonResponse(JSON.stringify(result, null, 2)); // 'null, 2' voor nette opmaak
+    } 
+    catch (err) {
       throw new Error('Er is een fout opgetreden: ');
-  // }
     }
   }
+  
+
+  const fetchformatData = async () => {
+ //   alert(`Inputveld ${inputRef.current.value}`);
+       try {
+         const response = await fetch(apiUrl);
+         if (!response.ok) {
+           alert('checkpoint3');
+           throw new Error('Netwerkresponse was niet ok');
+         } 
+     //    const datax = await response.json();
+   
+         const data: Resultaat[] = await response.json();
+         users(data);
+       } 
+       catch (err) {
+         throw new Error('Er is een fout opgetreden: ');
+       }
+     }
+
+
+  
+  //Type__REST API
+//  const fetchformatData
+//      <div id="result" ref={RESTRef}>xx</div>
+
+//
+//<button onClick={fetchformatData}>Type____REST API</button>
 
 
 
@@ -88,12 +139,48 @@ function App() {
       </div>
       <button onClick={signOut}>Sign out</button>
       <button onClick={fetchData}>Get REST API</button>
-      <input type="text" ref={inputRef} placeholder="Voer----- iets in" />
-      <button onClick={handleButtonClick}>Toon Ingevoerde Tekst</button>
+     
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <div>
+        {jsonResponse ? (
+          <pre style={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
+            {jsonResponse}
+          </pre>
+        ) : (
+          <p>Geen gegevens beschikbaar</p>
+        )}
+      </div>
+      <input type="text" ref={inputRef} placeholder="Voer iets in" />
 
-      <label>Invoer</label>
+      <button onClick={fetchformatData}>TypeScript REST API</button>
 
-      <div id="result">result</div>
+      <div>
+            <h2>Gebruikerslijst:</h2>
+      </div>
+
+
+
+      {/* Weergave van foutmelding, indien aanwezig */}
+      {error && <p style={{ color: 'red' }}>{error}</p>}
+
+      {/* Weergave van de gebruikersgegevens */}
+      <div>
+        {users.length > 0 ? (
+          <div>
+            <h2>Gebruikerslijst:</h2>
+            <ul>
+              {users.map((user) => (
+                <li key={user.status}>
+                  <strong>body:</strong> {user.body}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : (
+          <p>Geen gebruikers om weer te geven</p>
+        )}
+      </div>
+
 
     </main>
   );
