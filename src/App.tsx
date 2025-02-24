@@ -11,6 +11,7 @@ function App() {
   const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
   //const [setResult] = useState('');
   const [result, setResult] = useState('');
+  
   const [jsonResponse, setJsonResponse] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
