@@ -20,47 +20,37 @@ function App() {
       "arg1" : "eerste",
       "arg2" : "tweede"
   };
-  const requestBody = JSON.stringify(jsonData)
-  const fetchData = async () => {
-        try {     
-          const response = await fetch(apiUrl, {
-            method: 'POST',
-            headers: {
-              "Content-Type":"application/json",
-            },
-            body: requestBody           
-          });
-          if (!response.ok) {
-            return response.text().then(errorMessage => {
-            alert (errorMessage)
-            throw new Error(errorMessage);  // Zorg ervoor dat je het foutbericht krijgt van de server
-          });
-        }
-        const result = await response.json();
-        // Zet de JSON om in een string en sla het op in de state
-        setJsonResponse(JSON.stringify(result, null, 2)); // 'null, 2' voor nette opmaak
-
-        } catch (error) {
-          alert (error)
-          console.error('Error calling Lambda function:', error);
-          throw error;
-        }
-     };
   
-  const fetchformatData = async () => {
-    try {
-      const response = await fetch(apiUrl);
+  const fetchData = async () => {
+    try { 
+      jsonData.arg1 = inputRef.current!.value;
+      //alert(inputRef.current!.value)
+      const requestBody = JSON.stringify(jsonData)    
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          "Content-Type":"application/json",
+        },
+        body: requestBody           
+      });
+     
       if (!response.ok) {
-        throw new Error('Netwerkresponse was niet ok');
-      } 
+        return response.text().then(errorMessage => {
+          alert (errorMessage)
+          throw new Error(errorMessage);  // Zorg ervoor dat je het foutbericht krijgt van de server
+        });
+      }
       const result = await response.json();
-      alert(`result is:  ${result.statusCode}  ${result.body}`)
-    } 
-    catch (err) {
-      throw new Error('Er is een fout opgetreden: ');
-    }
-  }
+      // Zet de JSON om in een string en sla het op in de state
+      setJsonResponse(JSON.stringify(result, null, 2)); // 'null, 2' voor nette opmaak
 
+    } catch (error) {
+      alert (error)
+      console.error('Error calling Lambda function:', error);
+      throw error;
+    }
+  };
+  
   useEffect(() => {
     client.models.Todo.observeQuery().subscribe({
       next: (data) => setTodos([...data.items]),
@@ -94,6 +84,8 @@ function App() {
         </a>
       </div>
       <button onClick={signOut}>Sign out</button>
+
+      <input type="text" ref={inputRef} placeholder="Voer iets in, bijvoorbeeld eerste" />
       <button onClick={fetchData}>Get REST API</button>
      
       {error && <p style={{ color: 'red' }}>{error}</p>}
@@ -103,12 +95,9 @@ function App() {
             {jsonResponse}
           </pre>
         ) : (
-          <p>Geen gegevens beschikbaar</p>
+          <p></p>
         )}
       </div>
-      <input type="text" ref={inputRef} placeholder="Voer iets in" />
-
-      <button onClick={fetchformatData}>Json velden REST API</button>
     </main>
   );
 }
