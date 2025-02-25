@@ -8,10 +8,8 @@ const client = generateClient<Schema>();
 
 function App() {
   const { user, signOut } = useAuthenticator();
-  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);
-  //const [setResult] = useState('');
-  const [result, setResult] = useState('');
-  
+  const [todos, setTodos] = useState<Array<Schema["Todo"]["type"]>>([]);  
+
   const [jsonResponse, setJsonResponse] = useState<string | null>(null);
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -24,7 +22,6 @@ function App() {
   };
   const requestBody = JSON.stringify(jsonData)
   const fetchData = async () => {
-//        alert ("check2b")
         try {     
           const response = await fetch(apiUrl, {
             method: 'POST',
@@ -39,11 +36,8 @@ function App() {
             throw new Error(errorMessage);  // Zorg ervoor dat je het foutbericht krijgt van de server
           });
         }
-        //return await response.json();
         const result = await response.json();
         // Zet de JSON om in een string en sla het op in de state
-        setResult(result.message); // Hier neem je de response van de backend
-
         setJsonResponse(JSON.stringify(result, null, 2)); // 'null, 2' voor nette opmaak
 
         } catch (error) {
